@@ -1,6 +1,7 @@
 import 'package:country_code_picker/country_code_picker.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -148,7 +149,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ],
             ),
             const Gap(16),
-            ElevatedButton(onPressed: () {}, child: const Text('Sign Up')),
+            ElevatedButton(
+                onPressed: () async {
+                  FirebaseAuth auth = FirebaseAuth.instance;
+
+                  try {
+                    UserCredential userCredentials = await auth.createUserWithEmailAndPassword(
+                      email: emailC.text.trim(),
+                      password: passC.text.trim(),
+                    );
+
+                    if( userCredentials != null ){
+                      Fluttertoast.showToast(msg: 'User Registered');
+                    }
+                  } on FirebaseAuthException catch (e){
+
+                    print(e.message);
+                    Fluttertoast.showToast(msg: e.message.toString());
+
+                  }
+                },
+                child: const Text('Sign Up')),
             TextButton(
                 onPressed: () {
                   Navigator.pop(context);
