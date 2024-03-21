@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "592549218872",
+    "project_id": "sbbwu-todo",
+    "storage_bucket": "sbbwu-todo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:592549218872:android:467cb4c24a3e6d90f174cd",
+        "android_client_info": {
+          "package_name": "com.sbbwu.sbbwu_firebase"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoDP97wsUQsjDA_tKvNbpYwjZMOIEaLD8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

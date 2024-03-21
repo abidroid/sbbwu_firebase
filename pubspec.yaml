@@ -39,6 +39,12 @@ dependencies:
   flutter_spinkit: ^5.2.0
   fluttertoast: ^8.2.4
   country_code_picker: ^3.0.0
+  firebase_core: ^2.25.4
+  firebase_auth: ^4.16.0
+  cloud_firestore: ^4.14.0
+  firebase_storage: ^11.6.0
+  image_picker: ^1.0.7
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:
