@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:sbbwu_firebase/screens/dashboard_screen.dart';
 import 'package:sbbwu_firebase/screens/forgot_password_screen.dart';
 import 'package:sbbwu_firebase/screens/sign_up_screen.dart';
 import 'package:sbbwu_firebase/screens/verify_email_screen.dart';
@@ -70,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
             ElevatedButton(onPressed: (){
               Navigator.of(context).push(MaterialPageRoute(builder: (context){
-                return const VerifyEmailScreen();
+                return const DashboardScreen();
               }));
 
 
