@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:sbbwu_firebase/screens/add_task_screen.dart';
+import 'package:sbbwu_firebase/screens/profile_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -24,7 +25,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
       appBar: AppBar(
         title: const Text('Dashboard'),
         actions: [
-          IconButton(onPressed: (){}, icon: const Icon(Icons.person)),
+          IconButton(onPressed: (){
+            Navigator.of(context).push(MaterialPageRoute(builder: (context){
+              return const ProfileScreen();
+            }));
+          }, icon: const Icon(Icons.person)),
           IconButton(onPressed: (){}, icon: const Icon(Icons.logout)),
 
         ],
