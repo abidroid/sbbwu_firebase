@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:sbbwu_firebase/screens/forgot_password_screen.dart';
 import 'package:sbbwu_firebase/screens/sign_up_screen.dart';
+import 'package:sbbwu_firebase/screens/verify_email_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -67,7 +68,13 @@ class _LoginScreenState extends State<LoginScreen> {
               style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),)),
 
 
-            ElevatedButton(onPressed: (){}, child: const Text('Login')),
+            ElevatedButton(onPressed: (){
+              Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                return const VerifyEmailScreen();
+              }));
+
+
+            }, child: const Text('Login')),
 
             const Gap(16),
 
