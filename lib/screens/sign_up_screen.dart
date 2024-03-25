@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool obscureText = true;
 
   String genderValue = 'Male';
+  String countryCode = '+93';
 
   @override
   Widget build(BuildContext context) {
@@ -45,11 +47,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
               decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
               child: Row(
                 children: [
-                  const CountryCodePicker(
-                    onChanged: print,
+                   CountryCodePicker(
+                    onChanged: (CountryCode? cc){
+                      setState(() {
+                        countryCode = cc!.toString();
+                      });
+                    },
                     // Initial selection and favorite can be one of code ('IT') OR dial_code('+39')
                     initialSelection: 'IT',
-                    favorite: ['+39', 'FR'],
+                    favorite: ['+92', 'PK'],
                     // optional. Shows only country name and flag
                     showCountryOnly: false,
                     // optional. Shows only country name and flag when popup is closed.
@@ -151,22 +157,77 @@ class _SignUpScreenState extends State<SignUpScreen> {
             const Gap(16),
             ElevatedButton(
                 onPressed: () async {
+                  // validation
+                  String name = nameC.text.trim();
+                  if (name.isEmpty) {
+                    Fluttertoast.showToast( msg: 'Please provide name');
+                    return;
+                  }
+
+                  String mobile = mobileC.text.trim();
+                  if( mobile.isEmpty){
+                    Fluttertoast.showToast( msg: 'Please provide mobile number');
+                    return;
+                  }
+
+                  String email = emailC.text.trim();
+                  if( email.isEmpty){
+                    Fluttertoast.showToast( msg: 'Please provide email');
+                    return;
+                  }
+                  String password = passC.text.trim();
+                  if( password.isEmpty){
+                    Fluttertoast.showToast( msg: 'Please provide password');
+                    return;
+                  }
+
+                  if( password.length < 6 ){
+                    Fluttertoast.showToast( msg: 'Please provide at least 6 characters in password');
+                    return;
+                  }
+
+                  String confirmPass = confirmPassC.text.trim();
+
+                  if( password != confirmPass){
+                    Fluttertoast.showToast( msg: 'Passwords do not match');
+                    return;
+                  }
+
+                  String finalMobileNumber = '$countryCode-$mobile';
+                                                // +92-4444444444
+
                   FirebaseAuth auth = FirebaseAuth.instance;
 
                   try {
-                    UserCredential userCredentials = await auth.createUserWithEmailAndPassword(
-                      email: emailC.text.trim(),
-                      password: passC.text.trim(),
+                    UserCredential userCredentials =
+                        await auth.createUserWithEmailAndPassword(
+                      email: email,
+                      password: password,
                     );
 
-                    if( userCredentials != null ){
-                      Fluttertoast.showToast(msg: 'User Registered');
-                    }
-                  } on FirebaseAuthException catch (e){
+                    if (userCredentials != null) {
 
+                      // save other information into database datastore
+                      String uid = userCredentials.user!.uid;
+
+                      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+                      await firestore.collection('users').doc(uid).set({
+                        'uid': uid,
+                        'name': name,
+                        'mobile': finalMobileNumber,
+                        'email': email,
+                        'gender': genderValue,
+                        'createdOn': DateTime.now().millisecondsSinceEpoch,
+                        'photo': null,
+                      });
+
+                      Fluttertoast.showToast(msg: 'User Registered');
+
+                    }
+                  } on FirebaseAuthException catch (e) {
                     print(e.message);
                     Fluttertoast.showToast(msg: e.message.toString());
-
                   }
                 },
                 child: const Text('Sign Up')),
