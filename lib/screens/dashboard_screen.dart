@@ -1,6 +1,8 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:sbbwu_firebase/screens/add_task_screen.dart';
 import 'package:sbbwu_firebase/screens/login_screen.dart';
 import 'package:sbbwu_firebase/screens/profile_screen.dart';
@@ -13,6 +15,19 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+
+  CollectionReference? taskRef;
+
+  @override
+  void initState() {
+
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    taskRef = FirebaseFirestore.instance.collection('tasks').doc(uid).collection('tasks');
+
+    super.initState();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,7 +79,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
         ],
       ),
-      body: const Placeholder(),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: taskRef?.snapshots(),
+        builder: (context, snapshot){
+
+          if( snapshot.hasData){
+
+            return Text(snapshot.data!.toString());
+          }else if (snapshot.hasError){
+            return const Center(child: Text('Something went wrong'));
+          }else{
+            return const Center(child: SpinKitWave(color: Colors.blue,),);
+          }
+        },
+      )
     );
   }
 }
