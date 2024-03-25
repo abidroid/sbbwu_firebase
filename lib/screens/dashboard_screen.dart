@@ -1,6 +1,8 @@
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sbbwu_firebase/screens/add_task_screen.dart';
+import 'package:sbbwu_firebase/screens/login_screen.dart';
 import 'package:sbbwu_firebase/screens/profile_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -30,7 +32,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
               return const ProfileScreen();
             }));
           }, icon: const Icon(Icons.person)),
-          IconButton(onPressed: (){}, icon: const Icon(Icons.logout)),
+          IconButton(onPressed: (){
+
+            showDialog(
+                barrierDismissible: false,
+                context: context, builder: (context){
+              return AlertDialog(
+                title: const Text('Confirmation'),
+                content: const Text('Are you sure to Sign Out ?'),
+                actions: [
+                  TextButton(onPressed: (){
+                    Navigator.pop(context);
+                  }, child: const Text('No')),
+
+                  TextButton(onPressed: (){
+                    Navigator.pop(context);
+
+                    FirebaseAuth.instance.signOut();
+
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context){
+                      return const LoginScreen();
+                    }));
+
+                  }, child: const Text('Yes')),
+
+                ],
+              );
+            });
+
+          }, icon: const Icon(Icons.logout)),
 
         ],
       ),
