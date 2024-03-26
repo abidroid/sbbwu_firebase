@@ -1,8 +1,9 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:gap/gap.dart';
+import 'package:intl/intl.dart';
 import 'package:sbbwu_firebase/screens/add_task_screen.dart';
 import 'package:sbbwu_firebase/screens/login_screen.dart';
 import 'package:sbbwu_firebase/screens/profile_screen.dart';
@@ -15,84 +16,175 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-
   CollectionReference? taskRef;
 
   @override
   void initState() {
-
     String uid = FirebaseAuth.instance.currentUser!.uid;
-    taskRef = FirebaseFirestore.instance.collection('tasks').doc(uid).collection('tasks');
+    taskRef = FirebaseFirestore.instance
+        .collection('tasks')
+        .doc(uid)
+        .collection('tasks');
 
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton.extended(onPressed: (){
-
-        Navigator.of(context).push(MaterialPageRoute(builder: (context){
-          return const AddTaskScreen();
-        }));
-      },
-        label: const Text('Add Task'),
-        icon: const Icon(Icons.add),),
-      appBar: AppBar(
-        title: const Text('Dashboard'),
-        actions: [
-          IconButton(onPressed: (){
-            Navigator.of(context).push(MaterialPageRoute(builder: (context){
-              return const ProfileScreen();
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () {
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+              return const AddTaskScreen();
             }));
-          }, icon: const Icon(Icons.person)),
-          IconButton(onPressed: (){
+          },
+          label: const Text('Add Task'),
+          icon: const Icon(Icons.add),
+        ),
+        appBar: AppBar(
+          title: const Text('Dashboard'),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (context) {
+                    return const ProfileScreen();
+                  }));
+                },
+                icon: const Icon(Icons.person)),
+            IconButton(
+                onPressed: () {
+                  showDialog(
+                      barrierDismissible: false,
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: const Text('Confirmation'),
+                          content: const Text('Are you sure to Sign Out ?'),
+                          actions: [
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Text('No')),
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
 
-            showDialog(
-                barrierDismissible: false,
-                context: context, builder: (context){
-              return AlertDialog(
-                title: const Text('Confirmation'),
-                content: const Text('Are you sure to Sign Out ?'),
-                actions: [
-                  TextButton(onPressed: (){
-                    Navigator.pop(context);
-                  }, child: const Text('No')),
+                                  FirebaseAuth.instance.signOut();
 
-                  TextButton(onPressed: (){
-                    Navigator.pop(context);
+                                  Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(builder: (context) {
+                                    return const LoginScreen();
+                                  }));
+                                },
+                                child: const Text('Yes')),
+                          ],
+                        );
+                      });
+                },
+                icon: const Icon(Icons.logout)),
+          ],
+        ),
+        body: StreamBuilder<QuerySnapshot>(
+          stream: taskRef?.snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              List tasksList = snapshot.data!.docs;
 
-                    FirebaseAuth.instance.signOut();
+              if (tasksList.isEmpty) {
+                return const Center(child: Text('No Tasks Found'));
+              }
 
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context){
-                      return const LoginScreen();
-                    }));
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ListView.builder(
+                    itemCount: tasksList.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        color: Colors.amber,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(tasksList[index]['title']),
+                                    Text(tasksList[index]['description']),
+                                    Text(getHumanReadableDate(
+                                        tasksList[index]['createdOn'])),
+                                  ],
+                                ),
+                              ),
+                              Column(
+                                children: [
+                                  IconButton(
+                                      onPressed: () {},
+                                      icon: const Icon(
+                                        Icons.edit,
+                                        color: Colors.blue,
+                                      )),
+                                  IconButton(
+                                      onPressed: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return AlertDialog(
+                                                title:
+                                                    const Text('Confirmation'),
+                                                content:const Row(
+                                                  children: [
+                                                    Icon(Icons.delete),
+                                                    Gap(10),
+                                                    Text(
+                                                        'Are you sure to delete ?'),
+                                                  ],
+                                                ),
+                                                actions: [
+                                                  TextButton(onPressed: (){
+                                                    Navigator.pop(context);
+                                                  }, child: const Text('No')),
+                                                  TextButton(onPressed: (){
 
-                  }, child: const Text('Yes')),
+                                                    Navigator.pop(context);
 
-                ],
+                                                    // delete ki logic
+                                                  }, child: const Text('Yes')),
+
+                                                ],
+                                              );
+                                            });
+                                      },
+                                      icon: const Icon(
+                                        Icons.delete,
+                                        color: Colors.red,
+                                      )),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
               );
-            });
+            } else if (snapshot.hasError) {
+              return const Center(child: Text('Something went wrong'));
+            } else {
+              return const Center(
+                child: SpinKitWave(
+                  color: Colors.blue,
+                ),
+              );
+            }
+          },
+        ));
+  }
 
-          }, icon: const Icon(Icons.logout)),
+  String getHumanReadableDate(int milliseconds) {
+    DateFormat dateFormat = DateFormat('dd/MM/yyyy hh:mm a');
 
-        ],
-      ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: taskRef?.snapshots(),
-        builder: (context, snapshot){
-
-          if( snapshot.hasData){
-
-            return Text(snapshot.data!.toString());
-          }else if (snapshot.hasError){
-            return const Center(child: Text('Something went wrong'));
-          }else{
-            return const Center(child: SpinKitWave(color: Colors.blue,),);
-          }
-        },
-      )
-    );
+    return dateFormat.format(DateTime.fromMillisecondsSinceEpoch(milliseconds));
   }
 }
