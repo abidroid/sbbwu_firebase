@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:sbbwu_firebase/screens/add_task_screen.dart';
@@ -146,12 +147,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                                   TextButton(onPressed: (){
                                                     Navigator.pop(context);
                                                   }, child: const Text('No')),
-                                                  TextButton(onPressed: (){
+                                                  TextButton(onPressed: () async{
 
                                                     Navigator.pop(context);
 
                                                     // delete ki logic
-                                                  }, child: const Text('Yes')),
+
+                                                    await taskRef!.doc(tasksList[index]['taskId'] ).delete();
+
+                                                    Fluttertoast.showToast(msg: 'Task Deleted');
+
+                                                    }, child: const Text('Yes')),
 
                                                 ],
                                               );
