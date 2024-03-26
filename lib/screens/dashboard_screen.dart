@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:sbbwu_firebase/screens/add_task_screen.dart';
 import 'package:sbbwu_firebase/screens/login_screen.dart';
 import 'package:sbbwu_firebase/screens/profile_screen.dart';
+import 'package:sbbwu_firebase/screens/task_update_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -122,7 +123,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               Column(
                                 children: [
                                   IconButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                                          return TaskUpdateScreen(snapshot: tasksList[index]);
+                                        }));
+                                      },
                                       icon: const Icon(
                                         Icons.edit,
                                         color: Colors.blue,
