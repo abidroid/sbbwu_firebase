@@ -10,6 +10,8 @@ import 'package:sbbwu_firebase/screens/login_screen.dart';
 import 'package:sbbwu_firebase/screens/profile_screen.dart';
 import 'package:sbbwu_firebase/screens/task_update_screen.dart';
 
+import '../utility/utility.dart';
+
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
@@ -193,9 +195,5 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ));
   }
 
-  String getHumanReadableDate(int milliseconds) {
-    DateFormat dateFormat = DateFormat('dd/MM/yyyy hh:mm a');
 
-    return dateFormat.format(DateTime.fromMillisecondsSinceEpoch(milliseconds));
-  }
 }
